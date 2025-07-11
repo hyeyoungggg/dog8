@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+
+  <div class='title_line'>
+    <div th:text="${memoVO.title}">제목</div>
+  </div>
+
+  <aside class="aside_right" th:if="${session.grade == 'admin'}">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/memo/list_all|}">목록</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/memo/create|}">등록</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/memo/update?memono=${memoVO.memono}|}">수정</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/memo/delete?memono=${memoVO.memono}|}">삭제</a>
+  </aside>
+
+  <aside class="aside_right" th:if="${session.grade != 'admin'}">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/memo/list_all|}">목록</a>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <fieldset class="fieldset_basic">
+    <ul>
+      <li class="li_none">
+        <div style="width: 100%; word-break: break-all;">
+          <span style="font-size: 1.5em; font-weight: bold;" th:text="${memoVO.title}">제목</span>
+          <span style="font-size: 1em;" th:text="${#dates.format(memoVO.rdate, 'yyyy-MM-dd')}">등록일</span><br><br>
+          <div style="white-space: pre-wrap;"><span th:text="${memoVO.content}">내용</span></div>
+        </div>
+      </li>
+
+      <li class="li_none" th:text="|등록일: ${#dates.format(memoVO.rdate, 'yyyy-MM-dd')}|">
+      </li>
+    </ul>
+
+    <div style="text-align: center; margin-top: 30px;">
+      <th:block th:if="${prevMemo != null}">
+        <a th:href="@{/memo/read(memono=${prevMemo.memono})}" class="btn">← 이전글</a>
+      </th:block>
+    
+      <th:block th:if="${nextMemo != null}">
+        <a th:href="@{/memo/read(memono=${nextMemo.memono})}" class="btn">다음글 →</a>
+      </th:block>
+    </div>    
+
+  </fieldset>
+
+</html>

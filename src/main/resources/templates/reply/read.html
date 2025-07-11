@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+  <div layout:fragment="content">
+
+    <script>
+      function toggleReplyLike(replyno) {
+        fetch("/replylike/good", {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ replyno: replyno })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.isUsers === 0) {
+            alert("로그인 후 이용 가능합니다.");
+            location.href = "/users/login_cookie_need";
+            return;
+          }
+
+          const panel = document.querySelector("#like_panel_" + replyno);
+          let icon = data.isLiked === 1
+            ? '<a href="javascript:void(0);" onclick="toggleReplyLike(' + replyno + ')"><img src="/replylike/images/hart_on.png" style="width: 22px;" title="좋아요"></a>'
+            : '<a href="javascript:void(0);" onclick="toggleReplyLike(' + replyno + ')"><img src="/replylike/images/hart_off.png" style="width: 22px;" title="좋아요"></a>';
+
+          panel.innerHTML = icon + ' (<span id="like_count_' + replyno + '">' + data.likeCount + '</span>)';
+        });
+      }
+    </script>
+
+    <div class='title_line'>
+      <span th:text="${dogVO.breed }" class="title_line_text"></span>
+      > <span th:text="${dogVO.name}" class="title_line_text"></span>
+      > 글 조회
+    </div>
+
+    <!-- 관리자와 일반 사용자의 메뉴 표시 -->
+    <!-- 생략된 aside, fieldset 영역 동일 -->
+
+    <!-- 댓글 목록 -->
+    <div class="reply_section">
+      <!-- 댓글 작성 폼 -->
+      <form action="/reply/create" method="post">
+        <input type="hidden" name="dogcontno" th:value="${dcontentsVO.dogcontno}">
+        <textarea name="content" required style="width:100%; height:80px; margin-top:10px;" placeholder="댓글을 입력하세요"></textarea>
+        <br>
+        <button type="submit" class="btn btn-secondary btn-sm" style="margin-top:5px;">댓글 등록</button>
+      </form>
+
+      <h3>댓글</h3>
+      <ul>
+        <li th:each="reply : ${replyList}">
+          <span th:text="${reply.usersname}"></span> :
+          <span th:text="${reply.content}"></span> -
+          <span th:text="${reply.rdate}"></span>
+
+          <span id="like_panel_[[${reply.replyno}]]">
+            <a href="javascript:void(0);" th:onclick="'toggleReplyLike(' + ${reply.replyno} + ')'">
+              <img th:src="@{/replylike/images/hart_off.png}" th:if="${reply.isLiked} == 0" style="width: 22px;">
+              <img th:src="@{/replylike/images/hart_on.png}" th:if="${reply.isLiked} == 1" style="width: 22px;">
+            </a>
+            (<span id="like_count_[[${reply.replyno}]]" th:text="${reply.likeCount}"></span>)
+          </span>
+        </li>
+      </ul>
+    </div>
+
+</html>

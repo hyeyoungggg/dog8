@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SB가 자동으로 구현하여 연동하는 interface -->
+<mapper namespace="dev.mvc.users.UsersDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+  <!-- 중복 아이디 검사 1: 아이디 중복 -->
+  <select id="checkID" resultType="int" parameterType="String">
+    SELECT COUNT(id) as cnt
+    FROM users
+    WHERE id=#{id}
+  </select>
+  
+  <!-- 회원 가입-->
+  <insert id="create" parameterType="dev.mvc.users.UsersVO">
+    INSERT INTO users(usersno, id, userspasswd, usersname, userstel, userszipcode, usersaddress1, usersaddress2, usersdate, usersgrade)
+    VALUES (users_seq.nextval, #{id}, #{userspasswd}, #{usersname}, #{userstel}, #{userszipcode}, 
+                 #{usersaddress1}, #{usersaddress2}, sysdate, #{usersgrade})
+  </insert>
+
+  <!-- 목록 -->
+  <select id="list" resultType="dev.mvc.users.UsersVO">
+    SELECT usersno, id, userspasswd, usersname, userstel, userszipcode, usersaddress1, usersaddress2, usersdate, usersgrade
+    FROM users
+    ORDER BY usersgrade ASC, id ASC
+  </select>
+  
+  <!-- memberno로 회원 정보 조회 -->
+  <select id="read" resultType="dev.mvc.users.UsersVO" parameterType="int">
+    SELECT usersno, id, userspasswd, usersname, userstel, userszipcode, usersaddress1, usersaddress2, usersdate, usersgrade
+    FROM users
+    WHERE usersno = #{usersno}
+  </select>  
+
+  <!-- id(이메일)로 회원 정보 조회 -->
+  <select id="readById" resultType="dev.mvc.users.UsersVO" parameterType="String">
+    SELECT usersno, id, userspasswd, usersname, userstel, userszipcode, usersaddress1, usersaddress2, usersdate, usersgrade
+    FROM users
+    WHERE id = #{id}
+  </select>
+  
+  <!-- 회원 정보 수정 -->
+  <update id="update" parameterType="dev.mvc.users.UsersVO">
+    UPDATE users 
+    SET usersname=#{usersname}, userstel=#{userstel}, userszipcode=#{userszipcode}, usersaddress1=#{usersaddress1}, usersaddress2=#{usersaddress2}
+    WHERE usersno=#{usersno}
+  </update>
+  
+  <!-- 회원 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM users
+    WHERE usersno=#{usersno}
+  </delete>
+
+  <!-- 로그인, 1: 로그인 처리, 0: 메시지 출력 -->
+  <select id="login" resultType="int" parameterType="HashMap">
+    SELECT COUNT(usersno) as cnt
+    FROM users
+    WHERE id=#{id} AND userspasswd=#{userspasswd}
+  </select>
+  
+  <!-- 현재 패스워드 검사 -->
+  <select id="passwd_check" parameterType="HashMap" resultType="int">
+    SELECT COUNT(usersno) as cnt
+    FROM users
+    WHERE usersno=#{usersno} AND userspasswd=#{userspasswd}
+  </select>
+   
+  <!-- 패스워드 변경 -->
+  <update id="passwd_update" parameterType="HashMap">
+    UPDATE users
+    SET userspasswd=#{userspasswd}
+    WHERE usersno=#{usersno}
+  </update>
+  
+</mapper>

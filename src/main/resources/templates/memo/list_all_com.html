@@ -1,0 +1,36 @@
+<!-- memo/list_fragment.html -->
+<div th:fragment="list_all_fragment"> 
+  <table class="table table-hover" style="width: 100%;">
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 60%;'/>
+      <col style='width: 15%;'/>
+      <col style='width: 15%;'/>
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="th_bs">번호</th>
+        <th class="th_bs">제목</th>
+        <th class="th_bs">등록일</th>
+        <th class="th_bs">관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="memoVO, status:${list}">
+        <td class="td_bs" th:text="${status.count}"></td>
+        <td class="td_bs">
+          <a th:href="@{|/memo/read?memono=${memoVO.memono}|}" style="display:block;" th:text="${memoVO.title}"></a>
+        </td>
+        <td class="td_bs" th:text="${#dates.format(memoVO.rdate, 'yyyy-MM-dd')}"></td>
+        <td class="td_bs">
+          <a th:href="@{|/memo/update?memono=${memoVO.memono}|}">
+            <img src="/memo/images/update.png" class="icon" title="수정">
+          </a>
+          <a th:href="@{|/memo/delete?memono=${memoVO.memono}|}">
+            <img src="/memo/images/delete.png" class="icon" title="삭제">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content">
+  <div class="title_line">알림</div>
+
+  <div class="msg_box">
+    <p th:text="${msg}">메시지 출력 영역</p>
+    <br>
+    <a th:href="${url}" class="btn btn-primary">확인</a>
+  </div>
+</div>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+
+  <div class="title_line">메모 상세 보기</div>
+
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로 고침</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/memo/list|}">목록</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/memo/update?memono=${memoVO.memono}|}">수정</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/memo/delete?memono=${memoVO.memono}|}">삭제</a>
+  </aside>
+
+  <div class="menu_line"></div>
+
+  <div style="display: flex; gap: 20px;">
+
+    <!-- 📅 달력 영역 -->
+    <div style="width: 60%;">
+      <h4 id='month_title' data-current_year='' data-current_month=''>
+        <a href="#" onclick="changeMonth(-1)">[이전달]</a> 
+        <span id='panel_year_month'></span> 
+        <a href="#" onclick="changeMonth(1)">[다음달]</a>
+      </h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="weekend">일</th>
+            <th>월</th>
+            <th>화</th>
+            <th>수</th>
+            <th>목</th>
+            <th>금</th>
+            <th class="saturday">토</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- 📝 메모 상세보기 영역 -->
+    <div style="flex: 1;">
+      <h3 th:text="${memoVO.title}">제목</h3>
+      <p style="color: gray;" th:text="|작성일: ${#dates.format(memoVO.rdate, 'yyyy-MM-dd')}|"></p>
+      <hr>
+      <div th:text="${memoVO.content}" style="white-space: pre-wrap;"></div>
+    </div>
+
+  </div>
+
+  <!-- CSS (간단) -->
+  <style>
+    th, td {
+      border: 1px solid #ddd;
+      padding: 4px;
+      height: 100px;
+      vertical-align: top;
+      word-wrap: break-word;
+      width: 14%;
+    }
+    .weekend { color: red; }
+    .saturday { color: blue; }
+    td div { display: flex; flex-direction: column; justify-content: flex-start; height: 100%; }
+  </style>
+
+  <!-- JS -->
+  <script>
+    async function fetchMemoByDate(date_calendar, contentDiv) {
+      try {
+        const response = await fetch("/memo/list_by_date?labeldate=" + date_calendar);
+        const data = await response.json();
+
+        for (let item of data) {
+          const memo = document.createElement("span");
+          memo.innerHTML = `<a href='/memo/read?memono=${item.memono}'>${item.title}</a>`;
+          contentDiv.appendChild(memo);
+        }
+      } catch (e) {
+        console.error("달력 데이터 로딩 실패", e);
+      }
+    }
+
+    window.onload = function () {
+      const year = parseInt('[[${year}]]');
+      const month = parseInt('[[${month}]]');
+      const panel = document.getElementById("panel_year_month");
+      const title = document.getElementById("month_title");
+
+      title.setAttribute("data-current_year", year);
+      title.setAttribute("data-current_month", month);
+      panel.innerHTML = `${year}년 ${month + 1}월`;
+
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDay = new Date(year, month, 1).getDay();
+      const tbody = document.querySelector("tbody");
+      tbody.innerHTML = "";
+
+      let row = document.createElement("tr");
+      for (let i = 0; i < firstDay; i++) row.appendChild(document.createElement("td"));
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement("td");
+        const contentDiv = document.createElement("div");
+
+        const date_calendar = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = date_calendar;
+        contentDiv.appendChild(dateSpan);
+
+        fetchMemoByDate(date_calendar, contentDiv);
+
+        cell.appendChild(contentDiv);
+        if ((firstDay + day - 1) % 7 === 0) cell.classList.add("weekend");
+        if ((firstDay + day - 1) % 7 === 6) cell.classList.add("saturday");
+
+        row.appendChild(cell);
+        if ((firstDay + day) % 7 === 0) {
+          tbody.appendChild(row);
+          row = document.createElement("tr");
+        }
+      }
+
+      if (row.children.length > 0 && row.children.length < 7) {
+        while (row.children.length < 7) row.appendChild(document.createElement("td"));
+        tbody.appendChild(row);
+      }
+    };
+
+    function changeMonth(cnt) {
+      const title = document.getElementById('month_title');
+      let y = parseInt(title.getAttribute('data-current_year'));
+      let m = parseInt(title.getAttribute('data-current_month'));
+      m += cnt;
+      if (m > 11) { m = 0; y++; }
+      else if (m < 0) { m = 11; y--; }
+      location.href = `/memo/read_calendar?year=${y}&month=${m}`;
+    }
+  </script>
+
+</div>
+</html>

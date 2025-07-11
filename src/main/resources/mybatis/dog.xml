@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.dog.DogDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+
+  <!-- 강아지 등록 -->
+  <insert id="create" parameterType="dev.mvc.dog.DogVO">
+    INSERT INTO Dogs (dogid, name, breed, content, rdate, seqno, visible, cnt)
+    VALUES (DOG.nextval, #{name}, #{breed}, #{content},  SYSDATE, #{seqno}, #{visible}, 0)
+  </insert>
+
+  <!-- 모든 강아지 목록 조회 -->
+  <select id="list_all" resultType="dev.mvc.dog.DogVO">
+    SELECT dogid, name, breed, content, rdate, seqno, visible, cnt
+    FROM Dogs
+    ORDER BY seqno ASC
+  </select>
+  
+    <!-- 특정 카테고리 조회 -->
+  <select id="read" resultType="dev.mvc.dog.DogVO">
+    SELECT dogid, name, breed, content, rdate, seqno, visible, cnt
+    FROM Dogs
+    WHERE dogid = #{dogid}
+  </select>
+  
+  <update id="update" parameterType="dev.mvc.dog.DogVO">
+    UPDATE Dogs 
+    SET name=#{name}, breed=#{breed}, cnt=#{cnt}, content=#{content}, seqno=#{seqno}, visible=#{visible}, rdate=SYSDATE
+    WHERE dogid=#{dogid}
+
+  </update>
+  
+  <delete id="delete" parameterType="Integer">
+    DELETE FROM Dogs WHERE dogid=#{dogid}
+  </delete>
+  
+  <!-- 우선 순위 높임, 10 등 -> 1 등 -->
+  <update id="update_seqno_forward" parameterType="Integer">
+    UPDATE Dogs SET seqno=seqno-1 WHERE dogid= #{dogid}
+  </update>
+
+  <!-- 우선 순위 낮춤, 1 등 -> 10 등 -->
+  <update id="update_seqno_backward" parameterType="Integer">
+    UPDATE Dogs SET seqno=seqno+1 WHERE dogid=#{dogid}
+  </update>
+  
+    <!-- 카테고리 공개 설정 -->
+  <update id="update_visible_y" parameterType="Integer">
+    UPDATE Dogs SET visible='Y' WHERE dogid=#{dogid}
+  </update>
+
+  <!-- 카테고리 비공개 설정 -->
+  <update id="update_visible_n" parameterType="Integer">
+    UPDATE Dogs SET visible='N' WHERE dogid=#{dogid}
+  </update>
+  
+  <!-- 공개된 대분류(*)만 출력 -->
+  <select id="list_all_grp_y" resultType="dev.mvc.dog.DogVO">
+      SELECT dogid, name, breed, content, rdate, seqno, visible, cnt
+      FROM Dogs 
+      WHERE name = '--' AND visible = 'Y' 
+      ORDER BY seqno ASC
+  </select>
+
+  <!-- 특정 중분류 출력 -->
+  <select id="list_all_name_y" resultType="dev.mvc.dog.DogVO" parameterType="String">
+      SELECT dogid, name, breed, content, rdate, seqno, visible, cnt
+      FROM Dogs 
+      WHERE breed=#{breed} AND name != '--' AND visible = 'Y' 
+      ORDER BY seqno ASC
+  </select>
+  
+   <select id="grpset" resultType="String">
+      SELECT breed 
+      FROM Dogs 
+      WHERE name = '--' 
+      ORDER BY seqno ASC
+  </select>
+  
+    <!-- 검색
+        SQL -> CateVO 객체 레코드 수 만큼 생성 -> ArrayList<cateVO> 객체가 생성되어 CateDAOInter로 리턴  -->
+  <select id="list_search" resultType="dev.mvc.dog.DogVO" parameterType="String">
+    SELECT dogid, name, breed, content, rdate, seqno, visible, cnt
+    FROM Dogs
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(breed) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(name) LIKE '%' || UPPER(#{word}) || '%')
+    </if> 
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 검색 갯수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) as cnt
+    FROM Dogs
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(breed) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(name) LIKE '%' || UPPER(#{word}) || '%')
+    </if> 
+    ORDER BY seqno ASC
+  </select>
+  
+      <!-- 검색
+        SQL -> CateVO 객체 레코드 수 만큼 생성 -> ArrayList<cateVO> 객체가 생성되어 CateDAOInter로 리턴  -->
+  <select id="list_search_paging" resultType="dev.mvc.dog.DogVO" parameterType="Map">
+    SELECT dogid, name, breed, content, rdate, cnt, seqno, visible, r
+      FROM (
+        SELECT dogid, name, breed, content, cnt, rdate, seqno, visible, rownum as r
+        FROM (
+          SELECT dogid, name, breed, content, rdate, seqno, visible, cnt
+          FROM Dogs
+          <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+          WHERE (UPPER(breed) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(name) LIKE '%' || UPPER(#{word}) || '%')
+          </if> 
+          ORDER BY seqno ASC
+        )
+      )
+      
+      WHERE r &gt;= #{start_num} AND r &lt;= #{end_num} <!-- WHERE r >= 7 AND r <= 9 -->
+      
+  </select>
+  
+    <!-- 특정 카테고리에 속한 콘텐츠 수 -->
+  <select id="count_by_dogid" resultType="int" parameterType="int">
+    SELECT COUNT(*) 
+    FROM dogcont 
+    WHERE dogid = #{dogid}
+  </select>
+  
+   <update id="update_cnt_breed_min" parameterType="Map">
+     UPDATE Dogs
+     SET cnt = cnt - #{deletecnt}
+     WHERE name = '--' AND breed = #{breed}
+   </update>
+   
+     <!-- 특정 카테고리에 속한 모든 레코드 삭제 -->
+   <delete id="delete_by_dogid" parameterType="int">
+    DELETE FROM dogcont
+    WHERE dogid=#{dogid}
+   </delete>
+  
+</mapper>

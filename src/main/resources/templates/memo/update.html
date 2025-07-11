@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+
+  <style>
+    .memo-form-wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #fffaf2;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      font-family: 'Nanum Pen Script', cursive;
+    }
+
+    .memo-form-wrapper h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #444;
+    }
+
+    .memo-form-wrapper label {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    .memo-form-wrapper input[type="text"],
+    .memo-form-wrapper textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 25px;
+      background-color: #fffef5;
+      font-family: inherit;
+    }
+
+    .memo-form-wrapper button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #ffcb7d;
+      color: #333;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .memo-form-wrapper button:hover {
+      background-color: #ffc04c;
+    }
+  </style>
+
+  <!-- 구글 손글씨 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+
+  <div class="memo-form-wrapper">
+    <h2>✏️ 공지사항 수정하기</h2>
+
+    <form name='frm' method='post' action='./update'>
+      <input type="hidden" name="memono" th:value="${memoVO.memono}">
+
+      <label for="title">제목</label>
+      <input type='text' name='title' id="title" th:value='${memoVO.title}' required placeholder="제목을 입력하세요">
+
+      <label for="content">내용</label>
+      <textarea name='content' id="content" rows="10" required placeholder="내용을 입력하세요"
+                th:text='${memoVO.content}'></textarea>
+
+      <div style="text-align: right;">
+        <button type="submit">저장</button>
+        <button type="button" onclick="location.href='/memo/list_all'">목록</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+</html>

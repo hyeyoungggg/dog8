@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${dogVO.breed}" class="title_line_text"></span > 
+    > <span th:text="${dogVO.name}" class="title_line_text"></span > 
+    > 글 등록
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="@{|./create?dogid=${dogVO.dogid }|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_dogid_search_paging?dogid=${dogVO.dogid }|}">기본 목록형</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_dogid_grid?dogid=${dogVO.dogid }|}">갤러리형</a>
+  </aside>
+  
+  <div class='menu_line'></div>
+  
+  <form name='frm' method='post' th:object="${dcontentsVO}" action='./create' enctype="multipart/form-data">
+    <input type="hidden" name="dogid" th:value="${dogVO.dogid }">
+    
+    <div>
+       <label>견종</label>
+       <input type='text' name='breed_cont' value='' required="required" placeholder="견종"
+                 autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+
+    <div>
+      <label>견종 이름</label>
+      <input type='text' name='dogname' value='' required="required" placeholder="견종 이름"
+               autofocus="autofocus" class="form-control" rows="12" style='width: 100%;'>
+   </div>
+
+    <div>
+      <label>견종 사이즈</label>
+      <input type='text' name='dog_size' value='' required="required" placeholder="견종 크기"
+                autofocus="autofocus" class="form-control" style='width: 100%;'>
+   </div>
+
+   <div>
+    <label>견종 나이</label>
+    <input type='text' name='dogage' value='' required="required" placeholder="견종 크기"
+              autofocus="autofocus" class="form-control" style='width: 100%;'>
+ </div>
+
+    <div>
+       <label>견종 성격</label>
+       <input type='text' name='personality' value='' required="required" placeholder="견종 특징"
+                autofocus="autofocus" class="form-control" rows="12" style='width: 100%;'>
+    </div>
+    <div>
+       <label>검색어</label>
+       <input type='text' name='word' value='' required="required" 
+                 class="form-control" style='width: 100%;'>
+    </div>   
+    <div>
+       <label>이미지</label>
+       <input type='file' class="form-control" name='file1MF' id='file1MF' value='' placeholder="파일 선택">
+    </div>   
+    <div>
+       <label>패스워드</label>
+       <input type='password' name='passwd' value='1234' required="required" 
+                 class="form-control" style='width: 50%;'>
+    </div>   
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">등록</button>
+      <button type="button" th:attr="onclick=|location.href='./list_by_dogid?dogid=${dogVO.dogid}'|" class="btn btn-secondary btn-sm">목록</button>
+    </div>
+  
+  </form>
+
+</div>

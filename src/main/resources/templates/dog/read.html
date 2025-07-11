@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<head>
+    <meta charset="UTF-8">
+    <title>강아지 정보 조회</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="title_line">강아지 정보 조회</div>
+
+    <aside class="aside_right">
+        <a href="javascript: location.reload();">새로 고침</a> |
+        <a th:href="@{|/cate/list_all|}">목록</a> |
+        <a th:href="@{|/dog/update/${dogVO.dogid}|}">수정</a> |
+        <a th:href="@{|/dog/delete/${dogVO.dogid}|}">삭제</a> |
+        <a th:href="@{|/dog/create|}">등록</a>
+      </aside>
+
+      <!--/* list_all_com.html의 list_all_fragment를 include */-->
+      <div th:replace="~{dog/list_search_com::list_search_fragment}"></div>
+      
+      <div class="menu_line"></div>
+
+    <div class="container mt-3"> <!--/* mt-3: margin top 16px */-->
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                품종 크기: <span th:text="${dogVO.breed}"></span>
+            </li>
+            <li class="list-group-item">
+                강아지 ID: <span th:text="${dogVO.dogid}"></span>
+                강아지 품종: <span th:text="${dogVO.name}"></span>
+                품종설명: <span th:text="${dogVO.content}"></span>
+            </li>
+            <li>
+                출력 순서: <span th:text="${dogVO.seqno}" style="margin-right: 20px;"></span>
+                출력 모드: <span th:text="${dogVO.visible}" style="margin-right: 20px;"></span>
+            </li>
+            <li class="list-group-item">
+                등록일: <span th:text="${dogVO.rdate.substring(0, 10)}"></span>
+            </li>
+            
+        </ul>
+    </div>
+
+    <!--/* '/cate/list_all_com.html' 파일의 list_all_fragment를 가져다 사용 */--> 
+    <div th:replace="~{dog/list_all_com::list_all_fragment}"></div> 
+
+</div>
+</body>
+</html>

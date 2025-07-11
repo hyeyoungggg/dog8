@@ -1,0 +1,74 @@
+<div th:fragment="list_all_fragment"> 
+
+  <table class="table table-hover" style="width: 100%;">
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 10%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 10%;'/>    
+      <col style='width: 20%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 20%;'/>
+
+    </colgroup>
+    <thead>
+      <tr>
+          <th class="th_bs">강아지 ID</th>
+          <th class="th_bs">품종 크기</th>
+          <th class="th_bs">품종</th>  
+          <th class="th_bs">품종설명</th>
+          <th class="th_bs">등록날짜</th>
+          <th class="th_bs">자료수</th> 
+          <th class="th_bs">기타 정보</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="dogVO,status : ${list}">
+        <td class="td_bs" th:text="${no - status.index}"></td>
+
+        <td class="td_bs">
+          <a th:href="@{|/dog/read/${dogVO.dogid}?word=${word}&now_page=${now_page}|}" style="display:block;" th:text="${dogVO.breed}"></a>
+        </td>
+
+        <td class="td_bs">
+          <a th:href="@{|/dog/read/${dogVO.dogid}?word=${word}&now_page=${now_page}|}" style="display:block;" th:text="${dogVO.name}"></a>
+        </td>
+
+        <td class="th_bs">
+            <a th:href="@{|/dog/read/${dogVO.dogid}?word=${word}&now_page=${now_page}|}"  style="display:block;" th:text="${dogVO.content}"></a>
+        </td>
+          <td class="th_bs" th:text="${dogVO.rdate}"></td>
+          <td class="td_bs" th:text="${dogVO.cnt}"></td>
+
+          <td class="th_bs">
+
+            <a th:href="@{|/dcontents/list_by_dogid?dogid=${dogVO.dogid}|}">
+              <img src="/dog/images/contents.png" class="icon" title="글목록">
+            </a>
+            <a th:href="@{|/dcontents/create?dogid=${dogVO.dogid}|}">
+              <img src="/dog/images/create.png" class="icon" title="글쓰기">
+            </a>
+
+            <span th:if="${dogVO.visible == 'Y'}">
+              <a th:href="@{|/dog/update_visible_n/${dogVO.dogid}?word=${word}&now_page=${now_page}|}">
+                <img src="/dog/images/show.png" class="icon" title="공개"></a>
+            </span>
+            
+            <span th:if="${dogVO.visible == 'N'}">
+              <a th:href="@{|/dog/update_visible_y/${dogVO.dogid}?word=${word}&now_page=${now_page}|}">
+                <img src="/dog/images/hide.png" class="icon" title="비공개"></a>
+            </span>
+            <span th:text="${dogVO.seqno}"></span>
+
+            <a th:href="@{|/dog/update_seqno_forward/${dogVO.dogid}?word=${word}&now_page=${now_page}|}"><img src="/dog/images/decrease.png" class="icon" title="우선순위 높임"></a>
+            <a th:href="@{|/dog/update_seqno_backward/${dogVO.dogid}?word=${word}&now_page=${now_page}|}"><img src="/dog/images/increase.png" class="icon" title="우선순위 낮춤"></a>
+            <a th:href="@{|/dog/update/${dogVO.dogid}?word=${word}&now_page=${now_page}|}"><img src="/dog/images/update.png" class="icon" title="수정"></a>
+            <a th:href="@{|/dog/delete/${dogVO.dogid}?word=${word}&now_page=${now_page}|}"><img src="/dog/images/delete.png" class="icon" title="삭제"></a>
+          </td>
+      </tr>
+    </tbody>
+  </table>
+    <!-- 페이지 버튼 목록 출력 시작 -->
+    <div class="Bottom_menu" th:utext="${paging}"></div> 
+    <!-- 페이지 버튼 목록 출력 종료 -->
+</div>

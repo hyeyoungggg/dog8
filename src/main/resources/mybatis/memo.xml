@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.memo.MemoDAOInter">
+
+  <!-- 메모 등록 -->
+  <insert id="create" parameterType="dev.mvc.memo.MemoVO">
+    INSERT INTO memo (memono, title, content, rdate, usersno)
+    VALUES (MEMO_SEQ.NEXTVAL, #{title}, #{content}, SYSDATE, #{usersno})
+  </insert>
+
+  <!-- 메모 1개 조회 -->
+  <select id="read" parameterType="int" resultType="dev.mvc.memo.MemoVO">
+    SELECT memono, title, content, rdate, usersno
+    FROM memo
+    WHERE memono = #{memono}
+  </select>
+
+  <!-- 메모 전체 목록 조회 -->
+  <select id="list" resultType="dev.mvc.memo.MemoVO">
+    SELECT memono, title, content, rdate, usersno, viewcnt
+    FROM memo
+    ORDER BY memono DESC
+  </select>
+
+  <!-- 메모 수정 -->
+  <update id="update" parameterType="dev.mvc.memo.MemoVO">
+    UPDATE memo
+    SET title = #{title},
+        content = #{content}
+    WHERE memono = #{memono}
+  </update>
+
+  <!-- 메모 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM memo
+    WHERE memono = #{memono}
+  </delete>
+  
+  <!-- 최신순 정렬 -->
+  <select id="list_by_latest" resultType="dev.mvc.memo.MemoVO">
+    SELECT * FROM memo
+    ORDER BY memono DESC
+  </select>
+
+  <!-- 조회수순 정렬 -->
+  <select id="list_by_viewcnt" resultType="dev.mvc.memo.MemoVO">
+    SELECT * FROM memo
+    ORDER BY viewcnt DESC
+  </select>
+
+  <!-- 조회수 증가 -->
+  <update id="increaseViewcnt" parameterType="int">
+    UPDATE memo
+    SET viewcnt = viewcnt + 1
+    WHERE memono = #{memono}
+  </update>
+
+  <!-- 이전 메모 -->
+<select id="prev" parameterType="int" resultType="dev.mvc.memo.MemoVO">
+  SELECT memono, title
+  FROM memo
+  WHERE memono &lt; #{memono}
+  ORDER BY memono DESC
+  FETCH FIRST 1 ROWS ONLY
+</select>
+
+  <!-- 다음 메모 -->
+ <select id="next" parameterType="int" resultType="dev.mvc.memo.MemoVO">
+  SELECT memono, title
+  FROM memo
+  WHERE memono &gt; #{memono}
+  ORDER BY memono ASC
+  FETCH FIRST 1 ROWS ONLY
+</select>
+
+  <!-- 페이징 (최신순) -->
+  <select id="list_paging" parameterType="map" resultType="dev.mvc.memo.MemoVO">
+    SELECT * FROM (
+      SELECT ROWNUM rnum, a.* FROM (
+        SELECT * FROM memo
+        ORDER BY memono DESC
+      ) a
+      WHERE ROWNUM &lt;= #{end}
+    )
+    WHERE rnum &gt;= #{begin}
+  </select>
+
+<!-- 페이징 (조회수순) -->
+  <select id="list_by_viewcnt_paging" parameterType="map" resultType="dev.mvc.memo.MemoVO">
+    SELECT * FROM (
+      SELECT ROWNUM rnum, a.* FROM (
+        SELECT * FROM memo
+        ORDER BY viewcnt DESC
+      ) a
+      WHERE ROWNUM &lt;= #{end}
+    )
+    WHERE rnum &gt;= #{begin}
+  </select>
+
+</mapper>

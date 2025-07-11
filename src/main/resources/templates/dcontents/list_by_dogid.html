@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+
+  <div class="title_line">
+    <span th:text="${dogVO.breed}" class="title_line_text"></span>
+    > <span th:text="${dogVO.name}" class="title_line_text"></span>
+  </div>
+
+  <aside class="aside_right">
+    <a th:href="@{|/dcontents/create?dogid=${dogVO.dogid}|}">등록</a>
+    <span class="menu_divide">|</span>
+    <a href="javascript:location.reload();">새로고침</a>
+  </aside>
+
+  <div class="menu_line"></div>
+
+  <table class="table table-hover" style="width: 100%; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <colgroup>
+      <col style="width: 12%;" />
+      <col style="width: 88%;" />
+    </colgroup>
+    <thead style="background-color: #FFE4C4;">
+      <tr>
+        <th class="th_bs">파일</th>
+        <th class="th_bs">제목 및 정보</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="dcontentsVO, status:${list}"
+          th:attr="onclick=|location.href='/dcontents/read?dogcontno=${dcontentsVO.dogcontno}'|"
+          style="cursor: pointer; height: 90px;">
+
+        <!-- 이미지 or 아이콘 -->
+        <td class="td_basic" style="text-align: center;">
+          <div th:if="${dcontentsVO.file1.endsWith('jpg') or dcontentsVO.file1.endsWith('png') or dcontentsVO.file1.endsWith('gif') or dcontentsVO.file1.endsWith('jpeg')}">
+            <img th:src="@{|/contents/storage/${dcontentsVO.thumb1}|}" style="width: 100px; height: 80px; border-radius: 6px;">
+          </div>
+
+          <div th:if="${((dcontentsVO.file1.endsWith('jpg') or dcontentsVO.file1.endsWith('png') or dcontentsVO.file1.endsWith('gif') or dcontentsVO.file1.endsWith('jpeg')) == false) and (dcontentsVO.size1 > 0)}">
+            <span th:text="${dcontentsVO.file1}"></span>
+          </div>
+
+          <div th:if="${dcontentsVO.size1 == 0}">
+            <img src="/contents/images/none1.png" style="width: 100px; height: 80px; border-radius: 6px;">
+          </div>
+        </td>
+
+        <!-- 제목 + 댓글수 + 성격 -->
+        <td class="td_left">
+          <div style="font-weight: bold; font-size: 18px;" th:text="${dcontentsVO.dogname}">이름</div>
+          <div style="color: #888; font-size: 13px;">댓글 <span style="color: #FF6347;" th:text="${dcontentsVO.replycnt}">0</span>개</div>
+          <div style="margin-top: 6px;">
+            <span th:if="${dcontentsVO.personality.length() > 160}" 
+                  th:text="|${dcontentsVO.personality.substring(0, 160)}...|"></span>
+            <span th:if="${dcontentsVO.personality.length() <= 160}" 
+                  th:text="${dcontentsVO.personality}"></span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+
+    <tr th:if="${list.size() == 0}">
+      <td colspan="2" style="text-align: center;">관련 글이 등록되지 않았습니다.</td>
+    </tr>
+  </table>
+
+  <div class="bottom_menu" style="margin-top: 20px;">
+    <button type="button" onclick="location.reload();" class="btn btn-primary btn-sm">새로 고침</button>
+  </div>
+
+</div>
+</html>

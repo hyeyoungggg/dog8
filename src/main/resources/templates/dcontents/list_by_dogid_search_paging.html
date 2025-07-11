@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content">
+
+  <div class="title_line">
+    <span th:text="${dogVO.breed}" class="title_line_text"></span>
+    > <span th:text="${dogVO.name}" class="title_line_text"></span>
+    <span th:if="${word != ''}" th:text="|> ${word} (${search_count} 건)|" class="title_line_text"></span>
+  </div>
+
+  <aside class="aside_right">
+    <span th:if="${session.grade == 'admin'}">
+      <a th:href="@{|/dcontents/create?dogid=${dogVO.dogid}|}">등록</a> │
+    </span>
+    <a href="javascript:location.reload();">새로고침</a> │
+    <a th:href="@{|./list_by_dogid?dogid=${dogVO.dogid}&word=${word}&now_page=${now_page}|}">목록형</a> │
+    <a th:href="@{|./list_by_dogid_grid?dogid=${dogVO.dogid}&word=${word}&now_page=${now_page}|}">갤러리형</a>
+  </aside>
+
+  <div class="menu_line"></div>
+
+  <table class="table table-hover" style="width: 100%;">
+    <colgroup>
+      <col style="width: 15%;">
+      <col style="width: 65%;">
+      <col style="width: 20%;">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="th_bs">파일</th>
+        <th class="th_bs">제목 / 성격</th>
+        <th class="th_bs">댓글 수</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr th:if="${list.size() > 0}" th:each="dcontentsVO : ${list}"
+          th:attr="onclick=|location.href='/dcontents/read?dogcontno=${dcontentsVO.dogcontno}&word=${word}&now_page=${now_page}'|"
+          style="cursor: pointer; height: 90px;">
+        <td style="text-align: center; vertical-align: middle;">
+          <div th:if="${dcontentsVO.file1.endsWith('jpg') or dcontentsVO.file1.endsWith('png') or dcontentsVO.file1.endsWith('gif') or dcontentsVO.file1.endsWith('jpeg')}">
+            <img th:src="@{|/contents/storage/${dcontentsVO.thumb1}|}" style="width: 100px; height: 70px;">
+          </div>
+          <div th:if="${dcontentsVO.size1 == 0}">
+            <img src="/contents/images/none1.png" style="width: 100px; height: 70px;">
+          </div>
+        </td>
+
+        <td class="td_left">
+          <div>
+            <strong th:text="${dcontentsVO.dogname}"></strong>
+            <span th:text="| (${dcontentsVO.rdate.substring(0, 10)}) |" style="color: gray; font-size: 12px;"></span><br>
+            <span th:if="${dcontentsVO.personality.length() > 100}" 
+                  th:text="|${dcontentsVO.personality.substring(0, 100)}...|"></span>
+            <span th:if="${dcontentsVO.personality.length() <= 100}" 
+                  th:text="${dcontentsVO.personality}"></span>
+          </div>
+        </td>
+
+        <td style="text-align: center; vertical-align: middle;">
+          <span th:text="|${dcontentsVO.replycnt}개|" style="color: gray;"></span>
+        </td>
+      </tr>
+
+      <tr th:if="${list.size() == 0}">
+        <td colspan="3" style="text-align: center;">관련 글이 등록되지 않았습니다.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="bottom_menu" th:utext="${paging}"></div>
+
+</div>
+</html>

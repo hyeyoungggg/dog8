@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <th:block th:fragment="list_all_fragment">
+    <div style="margin: 20px 0;">
+      <form th:action="@{/reply/create}" method="post">
+        <input type="hidden" name="dogdontno" th:value="${dogdontno}" />
+        <input type="hidden" name="usersno" value="1" /> <!-- 테스트용 -->
+
+        <textarea name="content" rows="3" cols="60" required></textarea>
+        <button type="submit" class="btn btn-primary">등록</button>
+      </form>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>댓글 번호</th>
+          <th>내용</th>
+          <th>작성일</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="reply : ${list}">
+          <td th:text="${reply.replyno}">1</td>
+          <td th:text="${reply.content}">내용</td>
+          <td th:text="${reply.rdate}">2025-04-25</td>
+          <td>
+            <a th:href="@{|/reply/update_form?replyno=${reply.replyno}|}" class="btn btn-sm btn-warning">수정</a>
+            <a th:href="@{|/reply/delete?replyno=${reply.replyno}&dogdontno=${reply.dogdontno}|}" class="btn btn-sm btn-danger">삭제</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </th:block>
+</html>

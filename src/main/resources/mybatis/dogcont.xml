@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="dev.mvc.dcontents.DcontentsDAOInter">
+  <!-- 등록한 레코드 갯수 1 리턴, #{usersno}: public int getAdminno() 호출됨 -->
+  <insert id="create" parameterType="dev.mvc.dcontents.DcontentsVO">
+    INSERT INTO dogcont(dogcontno, usersno, dogid, dogname, breed_cont, dog_size, personality, dogage, passwd, word,
+                                     file1, file1saved, thumb1, size1, rdate)
+    VALUES(dogcont_seq.nextval, #{usersno}, #{dogid}, #{dogname}, #{breed_cont}, #{dog_size}, #{personality}, #{dogage},#{passwd}, #{word},
+                #{file1}, #{file1saved}, #{thumb1}, #{size1}, sysdate)
+  </insert>
+
+  <!-- 모든 카테고리의 등록된 글목록 -->
+  <select id="list_all" resultType="dev.mvc.dcontents.DcontentsVO">
+    SELECT dogcontno, usersno, dogid, dogname, dogage, breed_cont, dog_size, personality, recom, cnt, replycnt, passwd, word, rdate,
+               file1, file1saved, thumb1, size1, mp4
+    FROM dogcont
+    ORDER BY dogcontno DESC
+  </select>
+  
+  <!-- 특정 카테고리의 등록된 글목록 -->
+  <select id="list_by_dogid" resultType="dev.mvc.dcontents.DcontentsVO" parameterType="int">
+    SELECT dogcontno, usersno, dogid, dogname, dogage, breed_cont, dog_size, personality, recom, cnt, replycnt, rdate,
+              LOWER(file1) as file1, file1saved, thumb1, size1, mp4
+    FROM dogcont 
+    WHERE dogid = #{dogid}
+    ORDER BY dogcontno DESC
+  </select> 
+  
+  <!-- 일반적인 조회 -->
+  <select id="read" resultType="dev.mvc.dcontents.DcontentsVO" parameterType="int">
+    SELECT dogcontno, usersno, dogid, dogname, dogage, breed_cont, dog_size, personality, recom, cnt, replycnt, passwd, word, rdate,
+              file1, file1saved, thumb1, size1, map, youtube
+    FROM dogcont
+    WHERE dogcontno = #{dogcontno}
+  </select>
+  
+  <!-- map 등록, 수정, 삭제, 
+         HashMap: VO 클래스는 변수가 너무 많아서 메모리 낭비가 발생함으로,
+                       보통 3개 이하의 적은 변수만 전달하는 경우 HashMap 사용 권장 -->
+  <update id="map" parameterType="HashMap">
+    UPDATE dogcont SET map=#{map} WHERE dogcontno=#{dogcontno}
+  </update>
+
+  <!-- Youtube 등록, 수정, 삭제, 
+         HashMap: VO 클래스는 변수가 너무 많아서 메모리 낭비가 발생함으로,
+                       보통 3개 이하의 적은 변수만 전달하는 경우 HashMap 사용 권장 -->
+  <update id="youtube" parameterType="HashMap">
+    UPDATE dogcont SET youtube=#{youtube} WHERE dogcontno=#{dogcontno}
+  </update>
+
+  <!-- 카테고리별 검색 목록 -->
+  <select id="list_by_dogid_search" resultType="dev.mvc.dcontents.DcontentsVO" parameterType="HashMap">
+    SELECT dogcontno, usersno, dogname, dogage, dogid, breed_cont, dog_size, personality, recom, cnt, replycnt, word, rdate,
+            file1, file1saved, thumb1, size1, map, youtube
+    FROM dogcont
+    <choose>
+      <when test="word == null or word == ' '"> <!-- 검색하지 않는 경우 -->
+        WHERE dogid=#{dogid}
+      </when>
+      <otherwise> <!-- 검색하는 경우 -->
+        WHERE dogid=#{dogid} AND (UPPER(breed_cont) LIKE '%' || UPPER(#{word}) || '%' 
+                                                  OR UPPER(personality) LIKE '%' || UPPER(#{word}) || '%' 
+                                                  OR UPPER(word) LIKE '%' || UPPER(#{word}) || '%')
+      </otherwise>
+    </choose>
+    ORDER BY dogcontno DESC   
+  </select>
+   
+  <!-- 카테고리별 검색 레코드 갯수 -->
+  <select id="list_by_dogid_search_count" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt
+    FROM dogcont
+    <choose>
+      <when test="word == null or word == ''"> <!-- 검색하지 않는 경우의 레코드 갯수 -->
+        WHERE dogid=#{dogid}
+      </when>
+      <otherwise> <!-- 검색하는 경우의 레코드 갯수 -->
+        WHERE dogid=#{dogid} AND (UPPER(breed_cont) LIKE '%' || UPPER(#{word}) || '%' 
+                                                  OR UPPER(personality) LIKE '%' || UPPER(#{word}) || '%' 
+                                                  OR UPPER(word) LIKE '%' || UPPER(#{word}) || '%')
+      </otherwise>
+    </choose>
+  </select>   
+
+  <!-- 카테고리별 검색 + 페이징 목록 -->
+  <select id="list_by_dogid_search_paging" resultType="dev.mvc.dcontents.DcontentsVO" parameterType="HashMap">
+   SELECT dogcontno, usersno, dogid, dogname, dogage, breed_cont, dog_size, personality, recom, cnt, replycnt, rdate, file1, file1saved, thumb1, size1, map, youtube, r
+   FROM (
+              SELECT dogcontno, usersno, dogid, dogname, dogage, breed_cont, dog_size, personality, recom, cnt, replycnt, rdate, file1, file1saved, thumb1, size1, map, youtube, rownum as r
+              FROM (
+                        SELECT dogcontno, usersno, dogid, dogname, dogage, breed_cont, dog_size, personality, recom, cnt, replycnt, rdate, file1, file1saved, thumb1, size1, map, youtube
+                        FROM dogcont
+                        <choose>
+                          <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
+                            WHERE dogid=#{dogid}
+                          </when>
+                          <otherwise>
+                            WHERE dogid=#{dogid} AND (UPPER(breed_cont) LIKE '%' || UPPER(#{word}) || '%' 
+                                                              OR UPPER(personality) LIKE '%' || UPPER(#{word}) || '%' 
+                                                              OR UPPER(word) LIKE '%' || UPPER(#{word}) || '%')
+                          </otherwise>
+                        </choose>
+                        ORDER BY dogcontno DESC
+               )
+    )
+    WHERE <![CDATA[ r >= #{start_num} AND r <= #{end_num} ]]>
+     
+    <!-- 1 page: WHERE r >= 1 AND r <= 10; 
+          2 page: WHERE r >= 11 AND r <= 20;
+          3 page: WHERE r >= 21 AND r <= 30; -->
+  </select>
+  
+  <!-- 패스워드 검사 -->
+  <select id="password_check" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt 
+    FROM dogcont
+    WHERE dogcontno = #{dogcontno} AND passwd=#{passwd}
+  </select>
+  
+  <!-- 글 수정 -->
+
+  <update id="update_text" parameterType="dev.mvc.dcontents.DcontentsVO">
+    UPDATE dogcont
+    SET breed_cont = #{breed_cont}, dogname = #{dogname}, dog_size = #{dog_size}, personality = #{personality}, dogage = #{dogage},  word = #{word}
+    WHERE dogcontno = #{dogcontno}
+  </update>
+
+  <!-- 파일 수정 -->
+  <update id="update_file" parameterType="dev.mvc.dcontents.DcontentsVO">
+    UPDATE dogcont
+    SET file1=#{file1}, file1saved=#{file1saved}, thumb1=#{thumb1}, size1=#{size1}
+    WHERE dogcontno = #{dogcontno}
+  </update>  
+
+  <!-- 글 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM dogcont
+    WHERE dogcontno=#{dogcontno}
+  </delete>
+  
+  <!-- FK dogid 컬럼에 대응하는 필수 SQL -->
+  <!-- 특정 카테고리에 속한 레코드 갯수를 리턴 -->
+  <select id="count_by_dogid" resultType="int" parameterType="int">
+    SELECT COUNT(*) as cnt 
+    FROM dogcont 
+    WHERE dogid=#{dogid}
+  </select>
+  
+  <!-- 특정 카테고리에 속한 모든 레코드 삭제 -->
+  <delete id="delete_by_dogid" parameterType="int">
+    DELETE FROM dogcont
+    WHERE dogid=#{dogid}
+  </delete>
+
+  <!-- FK usersno 컬럼에 대응하는 필수 SQL -->
+  <!-- 특정 카테고리에 속한 레코드 갯수를 리턴 -->
+  <select id="count_by_usersno" resultType="int" parameterType="int">
+    SELECT COUNT(*) as cnt 
+    FROM dogcont 
+    WHERE usersno=#{usersno}
+  </select>
+  
+  <!-- 특정 카테고리에 속한 모든 레코드 삭제 -->
+  <delete id="delete_by_usersno" parameterType="int">
+    DELETE FROM dogcont
+    WHERE usersno=#{usersno}
+  </delete>
+
+   <!-- 댓글 수 증가 -->
+   <update id="increaseReplycnt" parameterType="int">
+     UPDATE dogcont
+     SET replycnt = replycnt + 1
+     WHERE dogcontno = #{dogcontno}
+   </update>
+
+   <!-- 댓글 수 감소 -->
+   <update id="decreaseReplycnt" parameterType="int">
+     UPDATE dogcont
+     SET replycnt = replycnt - 1
+     WHERE dogcontno = #{dogcontno}
+   </update>
+   
+    <update id="update_cnt_breed_up" parameterType="String">
+     UPDATE Dogs
+     SET cnt = cnt + 1
+     WHERE name = '--' AND breed = #{breed}
+   </update>
+
+    <update id="update_cnt_breed_down" parameterType="String">
+     UPDATE Dogs
+     SET cnt = cnt - 1
+     WHERE name = '--' AND breed = #{breed}
+   </update>
+   
+     <!-- 댓글 수 증가 -->
+   <update id="update_cnt_up" parameterType="int">
+     UPDATE Dogs
+     SET cnt = cnt + 1
+     WHERE dogid = #{dogid}
+   </update>
+
+   <!-- 댓글 수 감소 -->
+   <update id="update_cnt_down" parameterType="int">
+     UPDATE Dogs
+     SET cnt = cnt - 1
+     WHERE dogid = #{dogid}
+   </update>
+   
+         <!-- 추천 수 증가 -->
+   <update id="increaseRecom" parameterType="int">
+     UPDATE dogcont
+     SET recom = recom + 1
+     WHERE dogcontno = #{dogcontno}
+   </update>
+      
+   <!-- 추천 수 감소 -->
+   <update id="decreaseRecom" parameterType="int">
+     UPDATE dogcont
+     SET recom = recom - 1
+     WHERE dogcontno = #{dogcontno}
+   </update>
+               
+</mapper> 

@@ -1,0 +1,80 @@
+<div th:fragment="navbarFragment">
+  <!-- 상단 메뉴 이미지 및 텍스트 -->
+  <div class="top_menu_img">
+    <div class="top_menu_label">강아지 블로그8.0</div>
+  </div>
+
+  <!-- 기존 내비게이션 바 -->
+  <nav th:fragment="navbarFragment" class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+      <!-- 로고 스타일 추가 -->
+      <a class="navbar-brand" href="/" style="font-size: 1.8rem; font-weight: bold; color: #FF6347;">멍멍이2</a>
+
+      <!-- 햄버거 메뉴 버튼 -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+        style="color: #FF6347;">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- 내비게이션 링크 -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown" th:each="dogVOMenu:${menu}"> <!--/* 대분류 */-->
+            <!--/* 대분류명(카테고리 그룹) 출력, private String genre; */-->
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false" th:text="${dogVOMenu.breed}">
+            </a>
+
+            <!--/* 중분류명(카테고리) 출력, private ArrayList<CateVO> list_name; */-->
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li th:each="dogVO:${dogVOMenu.list_name}"><a class="dropdown-item"
+                  th:href="@{|/dcontents/list_by_dogid?dogid=${dogVO.dogid}|}" th:text="${dogVO.name}"></a></li>
+            </ul>
+
+            <!-- 강아지 관련 메뉴 항목 -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false" th:text="회원">
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li class="nav-item">
+                <a class="nav-link" th:href="@{|/users/create|}">회원 가입</a>
+              </li>
+              <li class="nav-item" th:if="${session.usersno != null}">
+                <a class="nav-link" th:href="@{|/users/passwd_update|}">비밀 번호 변경</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item"><a class="nav-link" th:href="@{|/calendar/list_calendar|}">일정 Calendar</a></li>
+            
+            <li class="nav-item"><a class="nav-link" th:href="@{|/memo/list_all|}">공지사항</a></li>
+
+            <li class="nav-item dropdown" th:if="${session.usersgrade=='admin'}">
+            
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false" th:text="관리자">
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li class="nav-item"><a class="nav-link" th:href="@{|/dog/list_search?word=${word}|}">카테고리 목록</a></li>
+              <li class="nav-item"><a class="nav-link" th:href="@{|/users/list|}">회원 목록</a></li>
+              <li class="nav-item"><a class="nav-link" th:href="@{|/dcontents/list_all|}">전체 글 목록</a></li>
+              <li class="nav-item"><a class="nav-link" th:href="@{|/calendar/create|}">일정 등록</a></li>
+              <li class="nav-item"><a class="nav-link" th:href="@{|/calendar/list_all|}">일정 목록</a></li>
+              <li class="nav-item"><a class="nav-link" th:href="@{|/contentsgood/list_all|}">추천 목록</a></li>
+              <li class="nav-item"><a class="nav-link" th:href="@{|/reply/list_all|}">댓글</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <span th:if="${session.usersno == null}"><a class="nav-link" href="/users/login"
+                th:text="@{|로그인|}"></a></span>
+            <span th:if="${session.usersno != null}"><a class="nav-link" href="/users/logout"
+                th:text="@{|${session.id} 로그아웃|}"></a></span> <!-- session.id 시스템 변수 사용하지 않고 id 해결 -->
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>

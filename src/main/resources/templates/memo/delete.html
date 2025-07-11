@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+
+  <style>
+    .memo-form-wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #fffaf2;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      font-family: 'Nanum Pen Script', cursive;
+      text-align: center;
+    }
+
+    .memo-form-wrapper h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #444;
+    }
+
+    .memo-form-wrapper .danger {
+      color: red;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .memo-form-wrapper button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #ffcb7d;
+      color: #333;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+    }
+
+    .memo-form-wrapper button:hover {
+      background-color: #ffc04c;
+    }
+
+    .memo-title {
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+  </style>
+
+  <div class="memo-form-wrapper">
+    <h2>📛 공지사항 삭제 확인</h2>
+
+    <div class="memo-title" th:text="${memoVO.title}">삭제할 메모 제목</div>
+
+    <form method="post" action="./delete">
+      <input type="hidden" name="memono" th:value="${memoVO.memono}">
+
+      <div class="danger">정말 삭제하시겠습니까? 삭제된 메모는 복구할 수 없습니다.</div>
+
+      <div>
+        <button type="submit">삭제</button>
+        <button type="button" onclick="history.back();">취소</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 손글씨 폰트 로딩 -->
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+
+</div>
+</html>

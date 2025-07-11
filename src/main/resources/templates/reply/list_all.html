@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+  <div class="title_line">댓글</div>
+
+  <aside class="aside_right">
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+  <div class="menu_line"></div>
+
+  <!-- 실제 댓글 리스트 fragment 포함 -->
+  <div th:replace="~{reply/list_all_com::list_all_fragment}"></div>
+</div>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content">
+
+  <div class="title_line">댓글 수정</div>
+
+  <form th:action="@{/reply/update}" method="post">
+    <input type="hidden" name="replyno" th:value="${replyVO.replyno}" />
+    <input type="hidden" name="dogdontno" th:value="${replyVO.dogdontno}" />
+
+    <textarea name="content" rows="4" cols="60" required th:text="${replyVO.content}"></textarea>
+    <br>
+    <button type="submit" class="btn btn-primary">수정</button>
+    <a th:href="@{|/reply/list_by_contentsno?dogdontno=${replyVO.dogdontno}|}" class="btn btn-secondary">취소</a>
+  </form>
+
+</div>
+</html>

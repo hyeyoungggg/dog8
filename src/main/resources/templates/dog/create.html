@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+
+<body>
+<div layout:fragment="content">
+    <div class="title_line">강아지 등록</div>
+    <div style="width: 50%; margin: 0 auto;">  
+        <form name="frm" method="post" action="/dog/create" th:object="${dogVO}">
+            <input type="hidden" name="word" th:value="${word}"> <!--/* 값 유지 */-->
+            <input type="hidden" name="now_page" th:value="${now_page}"> <!--/* 값 유지 */-->
+            
+            <!-- 품종 -->
+            <div>
+                <label>품종 크기</label>
+                <input type="text" name="breed" class="form-control form-control-sm" 
+                       style="width: 100%;" th:field="*{breed}" required>
+                <div th:if="${#fields.hasErrors('breed')}" class="alert alert-danger" role="alert">
+                    <div th:each="err: ${#fields.errors('breed')}" th:text="${err}"></div>
+                </div>  
+            </div>
+
+            <!-- 강아지 이름 -->
+            <div>
+                <label>품종</label>
+                <input type="text" name="name" class="form-control form-control-sm" 
+                       style="width: 100%;" th:field="*{name}" required>
+                <div th:if="${#fields.hasErrors('name')}" class="alert alert-danger" role="alert">
+                    <div th:each="err: ${#fields.errors('name')}" th:text="${err}"></div>
+                </div>  
+            </div>
+
+            <!-- 품종 설명 -->
+            <div>
+                <label>품종 설명</label>
+                <textarea name="content" class="form-control form-control-sm" 
+                          style="width: 100%;" th:field="*{content}" rows="4"></textarea>
+                <div th:if="${#fields.hasErrors('content')}" class="alert alert-danger" role="alert">
+                    <div th:each="err: ${#fields.errors('content')}" th:text="${err}"></div>
+                </div>
+            </div>
+
+            <div>
+                <label>출력 순서</label>
+                <input type="number" name="seqno" value="1" min="1" max="1000000" step="1"
+                   class="form-control fom-control-sm" style="width: 50%;" th:field="*{seqno}">
+                <div th:if="${#fields.hasErrors('seqno')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+                    <div th:each="err: ${#lists.sort(#fields.errors('seqno'))}" th:text="${err}"></div>
+                </div>  
+            <div>
+
+            <div>
+              <label>출력 모드(Y/N)</label>
+              <div style="margin-right: 2px; width: 15%; float: left;">
+                <select id="visible" name="visible" class="form-control">
+                    <option value="출력 모드" selected="selected">출력 모드</option>
+                    <option value="Y">Y</option>
+                    <option value="N">N</option>
+                </select>
+            </div>
+
+            <div th:if="${#fields.hasErrors('visible')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+                <div th:each="err: ${#lists.sort(#fields.errors('visible'))}" th:text="${err}"></div>
+              </div>  
+            </div>
+
+            <!-- 버튼 -->
+            <div class="content_body_bottom mt-3">
+                <button type="submit" class="btn btn-primary btn-sm">등록</button>
+                <button type="button" th:attr="onclick=|location.href='/dog/list_search?word=${word}&now_page=${now_page}'|" class="btn btn-secondary btn-sm">목록</button>
+            </div>
+        </form>
+    </div>  
+</div>
+</body>
+</html>

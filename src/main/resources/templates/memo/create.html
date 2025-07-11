@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+
+  <style>
+    .memo-form-wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #fffaf2;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      font-family: 'Nanum Pen Script', cursive;
+    }
+
+    .memo-form-wrapper h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #444;
+    }
+
+    .memo-form-wrapper label {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    .memo-form-wrapper input[type="text"],
+    .memo-form-wrapper textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 25px;
+      background-color: #fffef5;
+      font-family: inherit;
+    }
+
+    .memo-form-wrapper button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #ffcb7d;
+      color: #333;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .memo-form-wrapper button:hover {
+      background-color: #ffc04c;
+    }
+  </style>
+
+  <div class="memo-form-wrapper">
+    <h2>📒 공지사항 작성하기</h2>
+
+    <form action="/memo/create" method="post">
+      <label for="title">제목</label>
+      <input type="text" id="title" name="title" required placeholder="예: 오늘의 다짐">
+
+      <label for="content">내용</label>
+      <textarea id="content" name="content" rows="10" required placeholder="예: 하루 2만보 걷기, 물 2L 마시기 등"></textarea>
+
+      <div style="text-align: right;">
+        <button type="submit">등록</button>
+        <button type="button" onclick="location.href='/memo/list_all'">목록</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 구글 손글씨 폰트 로딩 -->
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+
+</div>
+</html>
